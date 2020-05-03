@@ -22,34 +22,5 @@ OPTIONS:
 ## Getting Started
 
 ```
-dev_server my_app --template react_app --port 8000
-```
-
-```html
-<!-- index.html -->
-<div id="root"></div>
-<script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
-<script type="module" src="./index.tsx"></script>
-```
-
-```tsx
-// index.tsx
-const { useState } = React;
-
-function Index(): JSX.Element {
-  // Declare a new state variable, which we'll call "count"
-  const [count, setCount] = useState(0);
-
-  return (
-    <div>
-      <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
-        Click me
-      </button>
-    </div>
-  );
-}
-
-ReactDOM.render(<Index />, document.getElementById("root"));
+dev_server my_app --template react_app
 ```
