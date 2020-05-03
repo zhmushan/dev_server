@@ -36,7 +36,7 @@ const serverArgs = parse(args) as ServerArgs;
 if (serverArgs.h ?? serverArgs.help) {
   console.log(`Dev Server
 INSTALL:
-  deno install --allow-net --allow-read --unstable https://deno.land/x/dev_server/mod.ts
+  deno install --allow-net --allow-read --allow-write --unstable https://deno.land/x/dev_server/mod.ts
 USAGE:
   dev_server [path] [options]
 OPTIONS:
