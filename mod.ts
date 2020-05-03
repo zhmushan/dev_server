@@ -1,3 +1,5 @@
+import type { DirMetadata } from "./types.ts";
+
 import {
   Application,
   NotFoundException,
@@ -5,8 +7,13 @@ import {
 import { logger } from "https://deno.land/x/abc@v0.2.11/middleware/logger.ts";
 import { Header, MIME } from "https://deno.land/x/abc@v0.2.11/constants.ts";
 import { join } from "https://deno.land/std@v0.42.0/path/mod.ts";
-import { exists } from "https://deno.land/std@v0.42.0/fs/mod.ts";
+import {
+  exists,
+  ensureDir,
+  writeFileStr,
+} from "https://deno.land/std@v0.42.0/fs/mod.ts";
 import { parse } from "https://deno.land/std@v0.42.0/flags/mod.ts";
+import { green } from "https://deno.land/std@v0.42.0/fmt/colors.ts";
 const { readFile, transpileOnly, cwd, stat, args, exit } = Deno;
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
@@ -17,6 +24,8 @@ interface ServerArgs {
   port: number;
   // --tsconfig
   tsconfig: string;
+  // --template
+  template: string;
   // -h --help
   h: boolean;
   help: boolean;
@@ -33,7 +42,8 @@ USAGE:
 OPTIONS:
   -h, --help          Prints help information
   -p, --port <port>   Set port
-  --tsconfig <path>   Path to tsconfig.json`);
+  --tsconfig <path>   Path to tsconfig.json
+  --template <name>   Create app with template`);
   exit();
 }
 
@@ -41,6 +51,44 @@ const port = serverArgs.port ?? serverArgs.p ?? 8080;
 const target = join(cwd(), serverArgs._[0] ?? ".");
 const tsconfigPath = join(target, serverArgs.tsconfig ?? "tsconfig.json");
 let compilerOptions: Deno.CompilerOptions = {};
+
+if (typeof serverArgs.template === "string") {
+  const templateMetadata: DirMetadata = (await import("./template.json"))
+    .default;
+
+  const url = "https://deno.land/x/dev_server/template";
+
+  if (hasOwnProperty.call(templateMetadata, serverArgs.template)) {
+    const template = templateMetadata[serverArgs.template];
+    if (typeof template === "object") {
+      await createDirFromMetadata(
+        target,
+        `${url}/${serverArgs.template}`,
+        template,
+      );
+    }
+
+    async function createDirFromMetadata(
+      localPath: string,
+      resourcePath: string,
+      metadata: DirMetadata,
+    ) {
+      ensureDir(localPath);
+      for (const k in metadata) {
+        const maybeMetadata = metadata[k];
+        const lp = join(localPath, k);
+        const rp = `${resourcePath}/${k}`;
+        if (typeof maybeMetadata === "object") {
+          await createDirFromMetadata(lp, rp, maybeMetadata);
+        } else {
+          const data = await fetch(rp).then((resp) => resp.text());
+          await writeFileStr(lp, data);
+          console.log(`${green("Create")} ${lp}`);
+        }
+      }
+    }
+  }
+}
 
 if (await exists(tsconfigPath)) {
   const tsconfig: { compilerOptions: Deno.CompilerOptions } = JSON.parse(
