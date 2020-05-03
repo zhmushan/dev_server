@@ -1,2 +1,1 @@
-const msg: string = "Hello World!";
-alert(msg);
+export const hello: string = "Hello World!";
