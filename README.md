@@ -22,5 +22,5 @@ OPTIONS:
 ## Getting Started
 
 ```
-dev_server my_app --template react_app
+dev_server my_app --template react
 ```
