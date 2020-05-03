@@ -14,7 +14,8 @@ USAGE:
 
 OPTIONS:
   -h, --help          Prints help information
-  -p, --port <PORT>   Set port
+  -p, --port <port>   Set port
+  --tsconfig <path>   Path to tsconfig.json
 ```
 
 ## Getting Started

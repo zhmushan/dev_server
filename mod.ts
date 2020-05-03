@@ -8,12 +8,15 @@ import { join } from "https://deno.land/std@v0.42.0/path/mod.ts";
 import { exists } from "https://deno.land/std@v0.42.0/fs/mod.ts";
 import { parse } from "https://deno.land/std@v0.42.0/flags/mod.ts";
 const { readFile, transpileOnly, cwd, stat, args, exit } = Deno;
+const hasOwnProperty = Object.prototype.hasOwnProperty;
 
 interface ServerArgs {
   _: string[];
   // -p --port
   p: number;
   port: number;
+  // --tsconfig
+  tsconfig: string;
   // -h --help
   h: boolean;
   help: boolean;
@@ -29,12 +32,24 @@ USAGE:
   dev_server [path] [options]
 OPTIONS:
   -h, --help          Prints help information
-  -p, --port <PORT>   Set port`);
+  -p, --port <port>   Set port
+  --tsconfig <path>   Path to tsconfig.json`);
   exit();
 }
 
 const port = serverArgs.port ?? serverArgs.p ?? 8080;
 const target = join(cwd(), serverArgs._[0] ?? ".");
+const tsconfigPath = join(target, serverArgs.tsconfig ?? "tsconfig.json");
+let compilerOptions: Deno.CompilerOptions = {};
+
+if (await exists(tsconfigPath)) {
+  const tsconfig: { compilerOptions: Deno.CompilerOptions } = JSON.parse(
+    decode(await readFile(tsconfigPath)),
+  );
+  if (hasOwnProperty.call(tsconfig, "compilerOptions")) {
+    compilerOptions = { ...compilerOptions, ...tsconfig.compilerOptions };
+  }
+}
 
 const app = new Application();
 app.start({ port, hostname: "0.0.0.0" });
@@ -45,7 +60,7 @@ app.use(logger()).get("/*files", async (c) => {
     return c.redirect("/index.html");
   }
   const p = join(target, c.path);
-  if (!await exists(p) || (await stat(p)).isDirectory) {
+  if (!(await exists(p)) || (await stat(p)).isDirectory) {
     throw new NotFoundException();
   }
   const f = await readFile(p);
@@ -54,7 +69,7 @@ app.use(logger()).get("/*files", async (c) => {
       Header.ContentType,
       MIME.ApplicationJavaScriptCharsetUTF8,
     );
-    return transform(c.path, decoder(f));
+    return transform(c.path, decode(f));
   } else if (c.path === "/index.html") {
     return c.htmlBlob(f);
   }
@@ -67,16 +82,12 @@ async function transform(rootName: string, source: string) {
     {
       [rootName]: source,
     },
-    {
-      strict: false,
-      jsx: "react",
-      sourceMap: false,
-    },
+    compilerOptions,
   );
 
   return result[rootName].source;
 }
 
-function decoder(b: Uint8Array) {
+function decode(b: Uint8Array) {
   return new TextDecoder().decode(b);
 }
