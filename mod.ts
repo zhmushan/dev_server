@@ -60,6 +60,7 @@ if (typeof serverArgs.template === "string") {
 
   if (hasOwnProperty.call(templateMetadata, serverArgs.template)) {
     const template = templateMetadata[serverArgs.template];
+    const processes: Promise<unknown>[] = [];
     if (typeof template === "object") {
       await createDirFromMetadata(
         target,
@@ -67,13 +68,14 @@ if (typeof serverArgs.template === "string") {
         template,
       );
     }
+    await Promise.all(processes);
 
     async function createDirFromMetadata(
       localPath: string,
       resourcePath: string,
       metadata: DirMetadata,
     ) {
-      ensureDir(localPath);
+      await ensureDir(localPath);
       for (const k in metadata) {
         const maybeMetadata = metadata[k];
         const lp = join(localPath, k);
@@ -81,9 +83,12 @@ if (typeof serverArgs.template === "string") {
         if (typeof maybeMetadata === "object") {
           await createDirFromMetadata(lp, rp, maybeMetadata);
         } else {
-          const data = await fetch(rp).then((resp) => resp.text());
-          await writeFileStr(lp, data);
-          console.log(`${green("Create")} ${lp}`);
+          const p = fetch(rp)
+            .then((resp) => resp.text())
+            .then((data) => writeFileStr(lp, data))
+            .then(() => console.log(`${green("Create")} ${lp}`));
+
+          processes.push(p);
         }
       }
     }
