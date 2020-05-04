@@ -1,4 +1,4 @@
-import { Component } from "https://cdn.pika.dev/@angular/core@9.1.4";
+import { Component } from "@angular/core";
 
 @Component({
   selector: "app-root",

@@ -3,6 +3,7 @@
   <noscript>Please enable JavaScript to continue using this application.</noscript>
 </body>
 
-<script src="https://unpkg.com/reflect-metadata@0.1.13/Reflect.js"></script>
-<script src="https://unpkg.com/zone.js@0.10.3/dist/zone.js"></script>
-<script type="module" src="./main.ts"></script>
+<script defer src="https://unpkg.com/es-module-shims@latest/dist/es-module-shims.js"></script>
+<script type="importmap-shim" src="./import_map.json"></script>
+<script type="module-shim" src="./polyfills.ts"></script>
+<script type="module-shim" src="./main.ts"></script>
