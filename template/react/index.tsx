@@ -1,4 +1,7 @@
-const { useState } = React;
+/// <reference lib="es2015.iterable" />
+
+import React, { useState } from "react";
+import * as ReactDOM from "react-dom";
 
 function Index(): JSX.Element {
   // Declare a new state variable, which we'll call "count"

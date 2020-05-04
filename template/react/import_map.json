@@ -1,0 +1,6 @@
+{
+  "imports": {
+    "react-dom": "https://cdn.pika.dev/react-dom@v16.13.1",
+    "react": "https://cdn.pika.dev/react@16.13.1"
+  }
+}
