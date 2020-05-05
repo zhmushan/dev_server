@@ -12,16 +12,15 @@ Feel free to import TypeScript files in the script tag!
 Without install:
 
 ```sh
-mkdir my_app
-deno -A --unstable https://deno.land/x/dev_server/mod.ts my_app
+deno run -A --unstable https://deno.land/x/dev_server/mod.ts --template hello_world
 ```
 
 Install & Run it:
 
 ```sh
 deno install -A --unstable https://deno.land/x/dev_server/mod.ts
-mkdir my_app
-dev_server my_app
+
+dev_server my_app --template hello_world
 ```
 
 Print help info:
@@ -33,7 +32,7 @@ dev_server -h
 Upgrade to the latest version:
 
 ```sh
-deno cache --reload https://deno.land/x/dev_server/mod.ts
+deno cache --reload --unstable https://deno.land/x/dev_server/mod.ts
 ```
 
 Create project from template:
