@@ -1,6 +1,6 @@
 import type { DirMetadata } from "./types.ts";
 
-import { join } from "https://deno.land/std@v0.42.0/path/mod.ts";
+import { join } from "https://deno.land/std@v1.0.0-rc1/path/mod.ts";
 const { readDir } = Deno;
 
 export async function resolveDir(p: string): Promise<DirMetadata> {
@@ -11,4 +11,17 @@ export async function resolveDir(p: string): Promise<DirMetadata> {
       : 1;
   }
   return m;
+}
+
+export function debounce<T extends unknown[]>(
+  cb: (...args: T) => void,
+  ms: number,
+) {
+  let timer: number;
+  return (...args: T) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      cb(...args);
+    }, ms);
+  };
 }

@@ -3,17 +3,17 @@ import type { DirMetadata } from "./types.ts";
 import {
   Application,
   NotFoundException,
-} from "https://deno.land/x/abc@v0.2.11/mod.ts";
-import { logger } from "https://deno.land/x/abc@v0.2.11/middleware/logger.ts";
-import { Header, MIME } from "https://deno.land/x/abc@v0.2.11/constants.ts";
-import { join } from "https://deno.land/std@v0.42.0/path/mod.ts";
+} from "https://deno.land/x/abc@v1.0.0-rc1/mod.ts";
+import { logger } from "https://deno.land/x/abc@v1.0.0-rc1/middleware/logger.ts";
+import { Header, MIME } from "https://deno.land/x/abc@v1.0.0-rc1/constants.ts";
+import { join } from "https://deno.land/std@v1.0.0-rc1/path/mod.ts";
 import {
   exists,
   ensureDir,
   writeFileStr,
-} from "https://deno.land/std@v0.42.0/fs/mod.ts";
-import { parse } from "https://deno.land/std@v0.42.0/flags/mod.ts";
-import { green } from "https://deno.land/std@v0.42.0/fmt/colors.ts";
+} from "https://deno.land/std@v1.0.0-rc1/fs/mod.ts";
+import { parse } from "https://deno.land/std@v1.0.0-rc1/flags/mod.ts";
+import { green } from "https://deno.land/std@v1.0.0-rc1/fmt/colors.ts";
 const { readFile, transpileOnly, cwd, stat, args, exit } = Deno;
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
@@ -53,8 +53,9 @@ const tsconfigPath = join(target, serverArgs.tsconfig ?? "tsconfig.json");
 let compilerOptions: Deno.CompilerOptions = {};
 
 if (typeof serverArgs.template === "string") {
-  const templateMetadata: DirMetadata = (await import("./template.json"))
-    .default;
+  const templateMetadata: DirMetadata = await fetch(
+    "https://deno.land/x/dev_server/template.json",
+  ).then((resp) => resp.json());
 
   const url = "https://deno.land/x/dev_server/template";
 
@@ -112,6 +113,7 @@ app.use(logger()).get("/*files", async (c) => {
   if (c.path === "/") {
     return c.redirect("/index.html");
   }
+
   const p = join(target, c.path);
   if (!(await exists(p)) || (await stat(p)).isDirectory) {
     throw new NotFoundException();
