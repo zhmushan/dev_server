@@ -1,7 +1,7 @@
-import { assertEquals } from "https://deno.land/std@v1.0.0-rc1/testing/asserts.ts";
-import { readJson } from "https://deno.land/std@v1.0.0-rc1/fs/mod.ts";
+import { assertEquals, fs } from "./dev_deps.ts";
 import { resolveDir } from "./util.ts";
 const { test } = Deno;
+const { readJson } = fs;
 
 test("template.json", async function () {
   const metadata = await resolveDir("./template");

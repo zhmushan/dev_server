@@ -1,7 +1,8 @@
 import type { DirMetadata } from "./types.ts";
 
-import { join } from "https://deno.land/std@v1.0.0-rc1/path/mod.ts";
+import { path } from "./deps.ts";
 const { readDir } = Deno;
+const { join } = path;
 
 export async function resolveDir(p: string): Promise<DirMetadata> {
   const m: DirMetadata = {};

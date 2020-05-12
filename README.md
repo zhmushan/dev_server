@@ -5,7 +5,7 @@ Feel free to import TypeScript files in the script tag!
 [![tag](https://img.shields.io/github/tag/zhmushan/dev_server.svg)](https://github.com/zhmushan/dev_server)
 [![Build Status](https://github.com/zhmushan/dev_server/workflows/ci/badge.svg?branch=master)](https://github.com/zhmushan/dev_server/actions)
 [![license](https://img.shields.io/github/license/zhmushan/dev_server.svg)](https://github.com/zhmushan/dev_server)
-[![tag](https://img.shields.io/badge/deno-v1.0.0_rc1-green.svg)](https://github.com/denoland/deno)
+[![tag](https://img.shields.io/badge/deno-v1.0.0_rc2-green.svg)](https://github.com/denoland/deno)
 
 ## Getting Started
 

@@ -3,18 +3,19 @@ import type { DirMetadata } from "./types.ts";
 import {
   Application,
   NotFoundException,
-} from "https://deno.land/x/abc@v1.0.0-rc1/mod.ts";
-import { logger } from "https://deno.land/x/abc@v1.0.0-rc1/middleware/logger.ts";
-import { Header, MIME } from "https://deno.land/x/abc@v1.0.0-rc1/constants.ts";
-import { join } from "https://deno.land/std@v1.0.0-rc1/path/mod.ts";
-import {
-  exists,
-  ensureDir,
-  writeFileStr,
-} from "https://deno.land/std@v1.0.0-rc1/fs/mod.ts";
-import { parse } from "https://deno.land/std@v1.0.0-rc1/flags/mod.ts";
-import { green } from "https://deno.land/std@v1.0.0-rc1/fmt/colors.ts";
+  logger,
+  Header,
+  MIME,
+  path,
+  fs,
+  flags,
+  colors,
+} from "./deps.ts";
 const { readFile, transpileOnly, cwd, stat, args, exit } = Deno;
+const { join } = path;
+const { exists, ensureDir, writeFileStr } = fs;
+const { parse } = flags;
+const { green } = colors;
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
 interface ServerArgs {
