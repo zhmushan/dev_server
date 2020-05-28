@@ -110,28 +110,29 @@ const app = new Application();
 app.start({ port, hostname: "0.0.0.0" });
 console.log(`Server running at http://127.0.0.1:${port}/`);
 
-app.use(logger()).get("/*files", async (c) => {
-  if (c.path === "/") {
+app
+  .use(logger())
+  .get("/", (c) => {
     return c.redirect("/index.html");
-  }
+  })
+  .get("/*", async (c) => {
+    const p = join(target, c.path);
+    if (!(await exists(p)) || (await stat(p)).isDirectory) {
+      throw new NotFoundException();
+    }
+    const f = await readFile(p);
+    if (/\.[j|t]sx?$/.test(c.path)) {
+      c.response.headers.set(
+        Header.ContentType,
+        MIME.ApplicationJavaScriptCharsetUTF8,
+      );
+      return transform(c.path, decode(f));
+    } else if (c.path === "/index.html") {
+      return c.htmlBlob(f);
+    }
 
-  const p = join(target, c.path);
-  if (!(await exists(p)) || (await stat(p)).isDirectory) {
-    throw new NotFoundException();
-  }
-  const f = await readFile(p);
-  if (/\.[j|t]sx?$/.test(c.path)) {
-    c.response.headers.set(
-      Header.ContentType,
-      MIME.ApplicationJavaScriptCharsetUTF8,
-    );
-    return transform(c.path, decode(f));
-  } else if (c.path === "/index.html") {
-    return c.htmlBlob(f);
-  }
-
-  c.blob(f);
-});
+    c.blob(f);
+  });
 
 async function transform(rootName: string, source: string) {
   const result = await transpileOnly(
