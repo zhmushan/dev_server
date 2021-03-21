@@ -2,6 +2,7 @@ import type { DirMetadata } from "./types.ts";
 
 import {
   Application,
+  cors,
   NotFoundException,
   logger,
   Header,
@@ -11,9 +12,9 @@ import {
   flags,
   colors,
 } from "./deps.ts";
-const { readFile, transpileOnly, cwd, stat, args, exit } = Deno;
+const { readFile, emit, cwd, stat, args, exit, writeTextFile } = Deno;
 const { join } = path;
-const { exists, ensureDir, writeFileStr } = fs;
+const { exists, ensureDir } = fs;
 const { parse } = flags;
 const { green } = colors;
 const hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -51,7 +52,10 @@ OPTIONS:
 const port = serverArgs.port ?? serverArgs.p ?? 8080;
 const target = join(cwd(), serverArgs._[0] ?? ".");
 const tsconfigPath = join(target, serverArgs.tsconfig ?? "tsconfig.json");
-let compilerOptions: Deno.CompilerOptions = {};
+let compilerOptions: Deno.CompilerOptions = {
+  inlineSources: true,
+  inlineSourceMap: true
+};
 
 if (typeof serverArgs.template === "string") {
   const templateMetadata: DirMetadata = await fetch(
@@ -87,7 +91,7 @@ if (typeof serverArgs.template === "string") {
         } else {
           const p = fetch(rp)
             .then((resp) => resp.text())
-            .then((data) => writeFileStr(lp, data))
+            .then((data) => writeTextFile(lp, data))
             .then(() => console.log(`${green("Create")} ${lp}`));
 
           processes.push(p);
@@ -112,6 +116,7 @@ console.log(`Server running at http://127.0.0.1:${port}/`);
 
 app
   .use(logger())
+  .use(cors())
   .get("/", (c) => {
     return c.redirect("/index.html");
   })
@@ -126,7 +131,7 @@ app
         Header.ContentType,
         MIME.ApplicationJavaScriptCharsetUTF8,
       );
-      return transform(c.path, decode(f));
+      return transform(p, decode(f));
     } else if (c.path === "/index.html") {
       return c.htmlBlob(f);
     }
@@ -135,14 +140,18 @@ app
   });
 
 async function transform(rootName: string, source: string) {
-  const result = await transpileOnly(
+  console.log(rootName)
+  const result = await emit(
+    rootName,
     {
-      [rootName]: source,
-    },
-    compilerOptions,
+      bundle: "esm",
+      check: true,
+      compilerOptions,
+    }
   );
 
-  return result[rootName].source;
+  console.log(result)
+  return result.files['deno:///bundle.js'];
 }
 
 function decode(b: Uint8Array) {

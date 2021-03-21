@@ -49,3 +49,10 @@ dev_server my_app --template angular
 - [ ] Hot Module Replacement
 - [ ] CSS Pre-Processors
 - [ ] Building for Production
+
+
+## Note:
+Quick test to run while working on modernization:
+```
+deno run --allow-read --allow-write --allow-net --unstable ./mod.ts ./template/hello_world
+```
