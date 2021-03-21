@@ -1,1 +1,25 @@
-{"angular":{".vscode":{"settings.json":1},"app":{"app.component.css":1,"app.component.html":1,"app.component.ts":1,"app.module.ts":1},"import_map.json":1,"index.html":1,"main.ts":1,"polyfills.ts":1,"style.css":1,"tsconfig.json":1},"hello_world":{"hello.ts":1,"index.html":1,"index.ts":1},"react":{".vscode":{"settings.json":1},"import_map.json":1,"index.html":1,"index.tsx":1,"tsconfig.json":1}}
+{
+  "hello_world": { "index.html": 1, "index.ts": 1, "hello.ts": 1 },
+  "angular": {
+    "index.html": 1,
+    "app": {
+      "app.component.html": 1,
+      "app.module.ts": 1,
+      "app.component.ts": 1,
+      "app.component.css": 1
+    },
+    "main.ts": 1,
+    "import_map.json": 1,
+    "style.css": 1,
+    "tsconfig.json": 1,
+    ".vscode": { "settings.json": 1 },
+    "polyfills.ts": 1
+  },
+  "react": {
+    "index.tsx": 1,
+    "index.html": 1,
+    "import_map.json": 1,
+    "tsconfig.json": 1,
+    ".vscode": { "settings.json": 1 }
+  }
+}

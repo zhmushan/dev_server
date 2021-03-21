@@ -1,9 +1,8 @@
-import { assertEquals, fs } from "./dev_deps.ts";
+import { assertEquals } from "./dev_deps.ts";
 import { resolveDir } from "./util.ts";
-const { test } = Deno;
-const { readJson } = fs;
+const { test, readTextFile } = Deno;
 
 test("template.json", async function () {
   const metadata = await resolveDir("./template");
-  assertEquals(metadata, await readJson("./template.json"));
+  assertEquals(metadata, JSON.parse(await readTextFile("./template.json")));
 });

@@ -2,18 +2,19 @@ import type { DirMetadata } from "./types.ts";
 
 import {
   Application,
-  NotFoundException,
-  logger,
-  Header,
-  MIME,
-  path,
-  fs,
-  flags,
   colors,
+  cors,
+  flags,
+  fs,
+  Header,
+  logger,
+  MIME,
+  NotFoundException,
+  path,
 } from "./deps.ts";
-const { readFile, transpileOnly, cwd, stat, args, exit } = Deno;
+const { readFile, emit, cwd, stat, args, exit, writeTextFile } = Deno;
 const { join } = path;
-const { exists, ensureDir, writeFileStr } = fs;
+const { exists, ensureDir } = fs;
 const { parse } = flags;
 const { green } = colors;
 const hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -87,7 +88,7 @@ if (typeof serverArgs.template === "string") {
         } else {
           const p = fetch(rp)
             .then((resp) => resp.text())
-            .then((data) => writeFileStr(lp, data))
+            .then((data) => writeTextFile(lp, data))
             .then(() => console.log(`${green("Create")} ${lp}`));
 
           processes.push(p);
@@ -108,10 +109,11 @@ if (await exists(tsconfigPath)) {
 
 const app = new Application();
 app.start({ port, hostname: "0.0.0.0" });
-console.log(`Server running at http://127.0.0.1:${port}/`);
+console.log(`Server running at http://0.0.0.0:${port}/`);
 
 app
   .use(logger())
+  .use(cors())
   .get("/", (c) => {
     return c.redirect("/index.html");
   })
@@ -126,7 +128,7 @@ app
         Header.ContentType,
         MIME.ApplicationJavaScriptCharsetUTF8,
       );
-      return transform(c.path, decode(f));
+      return transform(p);
     } else if (c.path === "/index.html") {
       return c.htmlBlob(f);
     }
@@ -134,15 +136,17 @@ app
     c.blob(f);
   });
 
-async function transform(rootName: string, source: string) {
-  const result = await transpileOnly(
+async function transform(rootName: string) {
+  console.log(rootName);
+  const result = await emit(
+    rootName,
     {
-      [rootName]: source,
+      bundle: "esm",
+      check: true,
+      compilerOptions,
     },
-    compilerOptions,
   );
-
-  return result[rootName].source;
+  return result.files;
 }
 
 function decode(b: Uint8Array) {

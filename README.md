@@ -44,6 +44,12 @@ dev_server my_app --template react
 dev_server my_app --template angular
 ```
 
+## Quick Test
+
+```
+deno run --allow-read --allow-write --allow-net --unstable ./mod.ts ./template/hello_world
+```
+
 ## TODOs
 
 - [ ] Hot Module Replacement
