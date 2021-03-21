@@ -144,9 +144,9 @@ async function transform(rootName: string) {
       bundle: "esm",
       check: true,
       compilerOptions,
-    }
+    },
   );
-  return result.files['deno:///bundle.js'];
+  return result.files["deno:///bundle.js"];
 }
 
 function decode(b: Uint8Array) {
