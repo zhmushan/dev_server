@@ -2,15 +2,15 @@ import type { DirMetadata } from "./types.ts";
 
 import {
   Application,
-  cors,
-  NotFoundException,
-  logger,
-  Header,
-  MIME,
-  path,
-  fs,
-  flags,
   colors,
+  cors,
+  flags,
+  fs,
+  Header,
+  logger,
+  MIME,
+  NotFoundException,
+  path,
 } from "./deps.ts";
 const { readFile, emit, cwd, stat, args, exit, writeTextFile } = Deno;
 const { join } = path;
@@ -52,10 +52,7 @@ OPTIONS:
 const port = serverArgs.port ?? serverArgs.p ?? 8080;
 const target = join(cwd(), serverArgs._[0] ?? ".");
 const tsconfigPath = join(target, serverArgs.tsconfig ?? "tsconfig.json");
-let compilerOptions: Deno.CompilerOptions = {
-  inlineSources: true,
-  inlineSourceMap: true
-};
+let compilerOptions: Deno.CompilerOptions = {};
 
 if (typeof serverArgs.template === "string") {
   const templateMetadata: DirMetadata = await fetch(
@@ -112,7 +109,7 @@ if (await exists(tsconfigPath)) {
 
 const app = new Application();
 app.start({ port, hostname: "0.0.0.0" });
-console.log(`Server running at http://127.0.0.1:${port}/`);
+console.log(`Server running at http://0.0.0.0:${port}/`);
 
 app
   .use(logger())
@@ -131,7 +128,7 @@ app
         Header.ContentType,
         MIME.ApplicationJavaScriptCharsetUTF8,
       );
-      return transform(p, decode(f));
+      return transform(p);
     } else if (c.path === "/index.html") {
       return c.htmlBlob(f);
     }
@@ -139,19 +136,17 @@ app
     c.blob(f);
   });
 
-async function transform(rootName: string, source: string) {
-  console.log(rootName)
+async function transform(rootName: string) {
+  console.log(rootName);
   const result = await emit(
     rootName,
     {
       bundle: "esm",
       check: true,
       compilerOptions,
-    }
+    },
   );
-
-  console.log(result)
-  return result.files['deno:///bundle.js'];
+  return result.files;
 }
 
 function decode(b: Uint8Array) {

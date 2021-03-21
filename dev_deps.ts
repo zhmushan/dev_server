@@ -1,2 +1,2 @@
-export { fs, path } from "./deps.ts";
+export { path } from "./deps.ts";
 export { assertEquals } from "https://deno.land/std@0.53.0/testing/asserts.ts";

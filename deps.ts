@@ -2,9 +2,7 @@ export {
   Application,
   NotFoundException,
 } from "https://deno.land/x/abc@v1.3.0/mod.ts";
-export {
-  cors
-} from "https://deno.land/x/abc@v1.3.0/middleware/cors.ts"
+export { cors } from "https://deno.land/x/abc@v1.3.0/middleware/cors.ts";
 export { logger } from "https://deno.land/x/abc@v1.3.0/middleware/logger.ts";
 export { Header, MIME } from "https://deno.land/x/abc@v1.3.0/constants.ts";
 export * as path from "https://deno.land/std@0.90.0/path/mod.ts";
