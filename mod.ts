@@ -146,7 +146,7 @@ async function transform(rootName: string) {
       compilerOptions,
     },
   );
-  return result.files;
+  return result.files["deno:///bundle.js"];
 }
 
 function decode(b: Uint8Array) {
