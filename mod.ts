@@ -141,7 +141,7 @@ async function transform(rootName: string) {
   const result = await emit(
     rootName,
     {
-      bundle: "esm",
+      bundle: "module",
       check: true,
       compilerOptions,
     },
